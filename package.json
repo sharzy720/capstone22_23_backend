@@ -1,0 +1,23 @@
+{
+  "name": "capstone22_23_backend",
+  "version": "1.0.0",
+  "description": "This is the Node.js backend for capstone22_23",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sharzy720/capstone22_23_backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sharzy720/capstone22_23_backend/issues"
+  },
+  "homepage": "https://github.com/sharzy720/capstone22_23_backend#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
