@@ -33,7 +33,7 @@ app.post('/transactions/:timestep', async function (req, res) {
             // Send json objest as response to API request
             res.json(transactions)
         })
-    }, 10);
+    }, 100);
 
 })
 
