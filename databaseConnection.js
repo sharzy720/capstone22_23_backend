@@ -9,15 +9,15 @@ let transactionFile;                                    // JSON file to write tr
 const driver = neo4j.driver(uri, neo4j.auth.basic(user, password)); // Logging into and connecting to database
 
 
-
 module.exports.getTransactions = async function(timestep) {
+    console.log('====start of getTransactions====')
     const json = ""
     const session = driver.session({ database: 'neo4j' });  // Create database session
     transactionFile = fs.openSync('transactions.json', 'w');    // Opening transaction JSON file
 
     try {
         // Query to run on the connected database
-        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep.toString() + '}]-(T:target) RETURN S.name, T.name LIMIT 2';
+        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep.toString() + '}]-(T:target) RETURN S.name as source, T.name as target LIMIT 2';
         // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN S.name as source, T.name as target LIMIT 2';
 
         const readResult = await session.readTransaction(tx =>
@@ -31,7 +31,7 @@ module.exports.getTransactions = async function(timestep) {
         // Create json file of transactions (source, target)
         writeToFile(transactionFile, "[\n")
         json.concat("[")
-        // console.log("[\n")
+        console.log("[")
 
         for await (const [index, record] of readResult.records.entries()) {
             // console.log(`Source ID: ${record.get('S.name')} ----> Target ID: ${record.get('T.name')}`)
@@ -45,13 +45,13 @@ module.exports.getTransactions = async function(timestep) {
                 // Appends source and target ids to the transaction json file
                 appendToFile(transactionFile, "{ \"source\": " + sourceID + ", \"target\": " + targetID + " }\n")
                 json.concat("{ \"source\": " + sourceID + ", \"target\": " + targetID + " }")
-                // console.log("{ \"source\": " + sourceID + ", \"target\": " + targetID + " }\n")
+                console.log("{ \"source\": " + sourceID + ", \"target\": " + targetID + " }")
 
             } else {
                 // Appends source and target ids to the transaction json file
                 appendToFile(transactionFile, "{ \"source\": " + sourceID + ", \"target\": " + targetID + " },\n")
                 json.concat("{ \"source\": " + sourceID + ", \"target\": " + targetID + " },")
-                // console.log("{ \"source\": " + sourceID + ", \"target\": " + targetID + " },\n")
+                console.log("{ \"source\": " + sourceID + ", \"target\": " + targetID + " },")
             }
         }
 
@@ -59,13 +59,13 @@ module.exports.getTransactions = async function(timestep) {
         setTimeout(() => {  appendToFile(transactionFile, "]"); }, 0);
         // appendToFile(transactionFile, "]");
         json.concat("]")
-        // console.log("]")
+        console.log("]")
     } catch (error) {
         console.error(`Something went wrong: ${error}`);
     } finally {
         await session.close();
     }
-    console.log(json)
+    console.log('====end of getTransactions====')
     // return JSON.parse(transactionFile)
     // return json
 }
@@ -106,3 +106,7 @@ function appendToFile(file, message) {
 
 // export {getTransactions};
 // module.exports.getTransaction = getTransaction;
+
+// TODO create testing files for getTransactions and getUsers
+const databaseConnection = require('./databaseConnection')
+databaseConnection.getTransactions(1).then(r => console.log('r = ' + r))
