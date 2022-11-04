@@ -176,7 +176,7 @@ function appendToFile(file, message) {
 
 
 // TODO create testing files for getTransactions and getUsers
-const databaseConnection = require('./databaseConnection')
+// const databaseConnection = require('./databaseConnection')
 // databaseConnection.getTransactions(1,2).then(r => console.log('r = ' + r))
 // setTimeout(() => {  databaseConnection.getUsers(1,2).then(r => console.log('r = ' + r)) }, 100);
-databaseConnection.getUsers(1,2).then(r => console.log('r = ' + r))
+// databaseConnection.getUsers(1,2).then(r => console.log('r = ' + r))
