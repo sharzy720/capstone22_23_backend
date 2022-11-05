@@ -13,7 +13,7 @@ const driver = neo4j.driver(uri, neo4j.auth.basic(user, password)); // Logging i
  * @param limit Number of transactions to return, DEFAULT: 1000
  * @returns {Promise<void>}
  */
-module.exports.getTransactions = async function(timestep=1, limit=1000) {
+module.exports.getTransactions = async function(timestep=1, limit=20) {
     console.log('====start of getTransactions====')
     // const json = ""
     const session = driver.session({ database: 'neo4j' });  // Create database session
@@ -81,7 +81,7 @@ module.exports.getTransactions = async function(timestep=1, limit=1000) {
  * @param limit Number of transactions to return, DEFAULT: 1000
  * @returns {Promise<void>}
  */
-module.exports.getUsers = async function(timestep=1, limit=1000) {
+module.exports.getUsers = async function(timestep=1, limit=20) {
     console.log('====start of getUsers====')
     // const json = ""
     const session = driver.session({ database: 'neo4j' });  // Create database session
