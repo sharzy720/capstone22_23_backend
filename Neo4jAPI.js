@@ -7,8 +7,8 @@ const PORT = 3000;
 
 app.use(express.json());
 
-// Working with transaction data
-app.post('/transactions/:timestep', async function (req, res) {
+// Getting all transactions of a given time step
+app.get('/transactions/:timestep', async function (req, res) {
     const { timestep } = req.params;
     let transactions;
 
@@ -35,7 +35,9 @@ app.post('/transactions/:timestep', async function (req, res) {
     }, 100);
 
 })
-app.post('/users/:timestep', async function (req, res) {
+
+// Getting all users of a given time step
+app.get('/users/:timestep', async function (req, res) {
     const { timestep } = req.params;
     let users;
     // Call to either create the user.json file or to return a string of user.json.
