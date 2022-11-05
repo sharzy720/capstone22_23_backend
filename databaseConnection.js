@@ -21,10 +21,11 @@ module.exports.getTransactions = async function(timestep=1, limit=20) {
 
     try {
         // Query to run on the connected database
-        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep.toString() + '}]-(T:target) ' +
-            'RETURN S.name as source, T.name as target ' +
-            'LIMIT ' + limit.toString();
-        // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN S.name as source, T.name as target LIMIT 2';
+        // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep.toString() + '}]-(T:target) ' +
+        //     'RETURN S.name as source, T.name as target ';
+        // // +
+        // //     'LIMIT ' + limit.toString();
+        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN S.name as source, T.name as target LIMIT 2';
 
         const readResult = await session.readTransaction(tx =>
             tx.run(readQuery)
@@ -89,14 +90,15 @@ module.exports.getUsers = async function(timestep=1, limit=20) {
 
     try {
         // Query to run on the connected database
-        const readQuery = 'MATCH p = (S:source)-[* {`time step`:' + timestep.toString() + '}]-(T:target) ' +
-            'RETURN S.name as name ' +
-            'LIMIT ' + limit.toString() + ' ' +
-            'UNION ' +
-            'MATCH p = (S:source)-[* {`time step`:2}]-(T:target) ' +
-            'RETURN T.name as name ' +
-            'LIMIT ' + limit.toString();
-        // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN S.name as source, T.name as target LIMIT 2';
+        // const readQuery = 'MATCH p = (S:source)-[* {`time step`:' + timestep.toString() + '}]-(T:target) ' +
+        //     'RETURN S.name as name ' +
+        //     // 'LIMIT ' + limit.toString() + ' ' +
+        //     'UNION ' +
+        //     'MATCH p = (S:source)-[* {`time step`:2}]-(T:target) ' +
+        //     'RETURN T.name as name ';
+        // +
+        //     'LIMIT ' + limit.toString();
+        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN S.name as name LIMIT 2 UNION MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN T.name as name LIMIT 2';
 
         const readResult = await session.readTransaction(tx =>
             tx.run(readQuery)
@@ -176,7 +178,7 @@ function appendToFile(file, message) {
 
 
 // TODO create testing files for getTransactions and getUsers
-// const databaseConnection = require('./databaseConnection')
-// databaseConnection.getTransactions(1,2).then(r => console.log('r = ' + r))
+const databaseConnection = require('./databaseConnection')
+databaseConnection.getTransactions(1).then(r => console.log('r = ' + r))
 // setTimeout(() => {  databaseConnection.getUsers(1,2).then(r => console.log('r = ' + r)) }, 100);
-// databaseConnection.getUsers(1,2).then(r => console.log('r = ' + r))
+databaseConnection.getUsers(1).then(r => console.log('r = ' + r))
