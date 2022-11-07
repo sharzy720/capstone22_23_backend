@@ -25,7 +25,7 @@ module.exports.getTransactions = async function(timestep=1, limit=20) {
         //     'RETURN S.name as source, T.name as target ';
         // // +
         // //     'LIMIT ' + limit.toString();
-        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN S.name as source, T.name as target LIMIT 2';
+        const readQuery = "MATCH p = (S:source)-[* {\`time step\`:"+timestep+"}]-(T:target) RETURN S.name as source, T.name as target LIMIT 500";
 
         const readResult = await session.readTransaction(tx =>
             tx.run(readQuery)
@@ -98,7 +98,7 @@ module.exports.getUsers = async function(timestep=1, limit=20) {
         //     'RETURN T.name as name ';
         // +
         //     'LIMIT ' + limit.toString();
-        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN S.name as name LIMIT 2 UNION MATCH p = (S:source)-[* {\`time step\`:2}]-(T:target) RETURN T.name as name LIMIT 2';
+        const readQuery = "MATCH p = (S:source)-[* {\`time step\`:"+timestep+"}]-(T:target) RETURN S.name as name LIMIT 500 UNION MATCH p = (S:source)-[* {\`time step\`:"+timestep+"}]-(T:target) RETURN T.name as name LIMIT 500";
 
         const readResult = await session.readTransaction(tx =>
             tx.run(readQuery)
