@@ -15,29 +15,22 @@ const driver = neo4j.driver(uri, neo4j.auth.basic(user, password)); // Logging i
  */
 module.exports.getTransactions = async function(timestep=1, limit=20) {
     console.log('====start of getTransactions====')
-    // const json = ""
+
     const session = driver.session({ database: 'neo4j' });  // Create database session
     let transactionFile = fs.openSync('transactions.json', 'w');    // JSON file to write transaction IDs to
 
     try {
         // Query to run on the connected database
-        // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep.toString() + '}]-(T:target) ' +
-        //     'RETURN S.name as source, T.name as target ';
-        // // +
-        // //     'LIMIT ' + limit.toString();
         const readQuery = "MATCH p = (S:source)-[* {\`time step\`:"+timestep+"}]-(T:target) RETURN S.name as source, T.name as target LIMIT 500";
 
         const readResult = await session.readTransaction(tx =>
             tx.run(readQuery)
         );  // Result received from the database
 
-        // let testJson = JSON.parse(readResult)
-
-        // console.log("Is readResult a json object: " + JSON.stringify(testJson));
 
         // Create json file of transactions (source, target)
         writeToFile(transactionFile, "[\n")
-        // json.concat("[")
+
         console.log("[")
 
         for await (const [index, record] of readResult.records.entries()) {
@@ -51,21 +44,20 @@ module.exports.getTransactions = async function(timestep=1, limit=20) {
 
                 // Appends source and target ids to the transaction json file
                 appendToFile(transactionFile, "{ \"source\": " + sourceID + ", \"target\": " + targetID + " }\n")
-                // json.concat("{ \"source\": " + sourceID + ", \"target\": " + targetID + " }")
+
                 console.log("{ \"source\": " + sourceID + ", \"target\": " + targetID + " }")
 
             } else {
                 // Appends source and target ids to the transaction json file
                 appendToFile(transactionFile, "{ \"source\": " + sourceID + ", \"target\": " + targetID + " },\n")
-                // json.concat("{ \"source\": " + sourceID + ", \"target\": " + targetID + " },")
+
                 console.log("{ \"source\": " + sourceID + ", \"target\": " + targetID + " },")
             }
         }
 
         // Timeout so closing bracket is written to end of json and not the middle
         setTimeout(() => {  appendToFile(transactionFile, "]"); }, 0);
-        // appendToFile(transactionFile, "]");
-        // json.concat("]")
+
         console.log("]")
     } catch (error) {
         console.error(`Something went wrong: ${error}`);
@@ -84,33 +76,22 @@ module.exports.getTransactions = async function(timestep=1, limit=20) {
  */
 module.exports.getUsers = async function(timestep=1, limit=20) {
     console.log('====start of getUsers====')
-    // const json = ""
+
     const session = driver.session({ database: 'neo4j' });  // Create database session
     let userFile = fs.openSync('users.json', 'w');         // JSON file to write user IDs to
 
     try {
         // Query to run on the connected database
-        // const readQuery = 'MATCH p = (S:source)-[* {`time step`:' + timestep.toString() + '}]-(T:target) ' +
-        //     'RETURN S.name as name ' +
-        //     // 'LIMIT ' + limit.toString() + ' ' +
-        //     'UNION ' +
-        //     'MATCH p = (S:source)-[* {`time step`:2}]-(T:target) ' +
-        //     'RETURN T.name as name ';
-        // +
-        //     'LIMIT ' + limit.toString();
+
         const readQuery = "MATCH p = (S:source)-[* {\`time step\`:"+timestep+"}]-(T:target) RETURN S.name as name LIMIT 500 UNION MATCH p = (S:source)-[* {\`time step\`:"+timestep+"}]-(T:target) RETURN T.name as name LIMIT 500";
 
         const readResult = await session.readTransaction(tx =>
             tx.run(readQuery)
         );  // Result received from the database
 
-        // let testJson = JSON.parse(readResult)
-
-        // console.log("Is readResult a json object: " + JSON.stringify(testJson));
-
         // Create json file of transactions (source, target)
         writeToFile(userFile, "[\n")
-        // json.concat("[")
+
         console.log("[")
 
         for await (const [index, record] of readResult.records.entries()) {
@@ -124,21 +105,20 @@ module.exports.getUsers = async function(timestep=1, limit=20) {
 
                 // Appends source and target ids to the transaction json file
                 appendToFile(userFile, "{ \"name\": " + userId + " }\n")
-                // json.concat("{ \"name\": " + id + " }\n")
+
                 console.log("{ \"name\": " + userId + " }\n")
 
             } else {
                 // Appends source and target ids to the transaction json file
                 appendToFile(userFile, "{ \"name\": " + userId + " },\n")
-                // json.concat("{ \"name\": " + id + " }\n")
+
                 console.log("{ \"name\": " + userId + " },\n")
             }
         }
 
         // Timeout so closing bracket is written to end of json and not the middle
         setTimeout(() => {  appendToFile(userFile, "]"); }, 0);
-        // appendToFile(transactionFile, "]");
-        // json.concat("]")
+
         console.log("]")
     } catch (error) {
         console.error(`Something went wrong: ${error}`);
@@ -177,8 +157,8 @@ function appendToFile(file, message) {
 }
 
 
-// TODO create testing files for getTransactions and getUsers
-const databaseConnection = require('./databaseConnection')
-databaseConnection.getTransactions(1).then(r => console.log('r = ' + r))
-// setTimeout(() => {  databaseConnection.getUsers(1,2).then(r => console.log('r = ' + r)) }, 100);
-databaseConnection.getUsers(1).then(r => console.log('r = ' + r))
+// create testing files for getTransactions and getUsers
+// const databaseConnection = require('./databaseConnection')
+// databaseConnection.getTransactions(1).then(r => console.log('r = ' + r))
+// // setTimeout(() => {  databaseConnection.getUsers(1,2).then(r => console.log('r = ' + r)) }, 100);
+// databaseConnection.getUsers(1).then(r => console.log('r = ' + r))
