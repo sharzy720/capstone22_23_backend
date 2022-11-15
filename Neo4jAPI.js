@@ -8,12 +8,13 @@ const PORT = 4000;
 app.use(express.json());
 
 // Getting all transactions of a given time step
-app.get('/transactions/:timestep', async function (req, res) {
+app.get('/transactions/:timestep/:limit', async function (req, res) {
     const { timestep } = req.params;
+    const { limit } = req.params;
     let transactions;
 
     // Call to either create transactions.json or return string of transactions json
-    await databaseConnection.getTransactions(timestep).then(r =>
+    await databaseConnection.getTransactions(timestep, limit).then(r =>
         console.log('databaseConnection promise = ' + r)
     );
 
@@ -26,7 +27,7 @@ app.get('/transactions/:timestep', async function (req, res) {
             }
 
             transactions = JSON.parse(data.toString())
-
+            console.log(timestep)
             console.log(transactions)
 
             // Send json objest as response to API request
@@ -37,11 +38,12 @@ app.get('/transactions/:timestep', async function (req, res) {
 })
 
 // Getting all users of a given time step
-app.get('/users/:timestep', async function (req, res) {
+app.get('/users/:timestep/:limit', async function (req, res) {
     const { timestep } = req.params;
+    const {limit} = req.params;
     let users;
     // Call to either create the user.json file or to return a string of user.json.
-    await databaseConnection.getUsers(timestep).then(r =>
+    await databaseConnection.getUsers(timestep, limit).then(r =>
         console.log('databaseConnection promise = ' + r)
     );
 
