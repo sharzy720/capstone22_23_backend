@@ -7,6 +7,7 @@ const PORT = 4000;
 
 app.use(express.json());
 
+
 // Getting all transactions of a given time step
 app.get('/transactions/:timestep/:limit', async function (req, res) {
     const { timestep } = req.params;
@@ -26,6 +27,7 @@ app.get('/transactions/:timestep/:limit', async function (req, res) {
                 throw err
             }
 
+            // Getting transactions from the database
             transactions = JSON.parse(data.toString())
             console.log(timestep)
             console.log(transactions)
@@ -37,10 +39,11 @@ app.get('/transactions/:timestep/:limit', async function (req, res) {
 
 })
 
+
 // Getting all users of a given time step
 app.get('/users/:timestep/:limit', async function (req, res) {
     const { timestep } = req.params;
-    const {limit} = req.params;
+    const { limit } = req.params;
     let users;
     // Call to either create the user.json file or to return a string of user.json.
     await databaseConnection.getUsers(timestep, limit).then(r =>
@@ -54,21 +57,19 @@ app.get('/users/:timestep/:limit', async function (req, res) {
                 throw err
             }
 
+            // Getting users from the database
             users = JSON.parse(data.toString())
 
             console.log(users)
 
-            // Send json objest as response to API request
+            // Send json object as response to API request
             res.json(users)
         })
     }, 100);
 
 })
 
-
-
-
-
+// API listening on the given port for incoming requests
 app.listen(PORT, function(err){
     if (err) console.log(err);
     console.log("Server listening on PORT", PORT);
