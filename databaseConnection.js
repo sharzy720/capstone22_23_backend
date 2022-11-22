@@ -37,7 +37,7 @@ module.exports.getTransactions = async function(timestep=1, limit=20) {
 
         console.log("[")
 
-        for await (const [index, record] of readResult.records.entries()) {
+        for (const [index, record] of readResult.records.entries()) {
             // console.log(`Source ID: ${record.get('S.name')} ----> Target ID: ${record.get('T.name')}`)
 
             let sourceID = record.get('source');    // ID of source user
@@ -101,7 +101,7 @@ module.exports.getUsers = async function(timestep=1, limit=20) {
 
         console.log("[")
 
-        for await (const [index, record] of readResult.records.entries()) {
+        for (const [index, record] of readResult.records.entries()) {
             // console.log(`Source ID: ${record.get('S.name')} ----> Target ID: ${record.get('T.name')}`)
 
             let userId = record.get('name');    // ID of source user
