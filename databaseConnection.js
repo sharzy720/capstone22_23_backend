@@ -109,7 +109,10 @@ module.exports.getUsers = async function(timestep=1, limit=20) {
          * User query to run on the database
          * @type {string}
          */
-        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as name LIMIT ' + limit + ' UNION MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN T.name as name LIMIT ' + limit;
+        // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as name LIMIT ' + limit + ' UNION MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN T.name as name LIMIT ' + limit;
+        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as name, S.class as class LIMIT ' + limit + ' UNION MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN T.name as name, S.class as class LIMIT ' + limit;
+
+        // MATCH p = (S:source)-[* {`time step`:1}]-(T:target) RETURN S.name as name, S.class as class LIMIT 100 UNION MATCH p = (S:source)-[* {`time step`:1}]-(T:target) RETURN T.name as name, S.class as class LIMIT 100
 
         /**
          * Result received from the database
@@ -118,6 +121,8 @@ module.exports.getUsers = async function(timestep=1, limit=20) {
         const readResult = await session.readTransaction(tx =>
             tx.run(readQuery)
         );
+
+        console.log("readResult = " + readResult)
 
         // Create json file of users (name)
         createUserFile(userFile, readResult);
@@ -200,17 +205,21 @@ function createUserFile(userFile, readResult) {
          */
         let userId = record.get('name');
 
+        let userClass = record.get('class')
+
         if (index === (readResult.records.length - 1)) {
             // Do not include a comma if the transaction is the last in the list
 
             // Appends source and target ids to the transaction json file
-            appendToFile(userFile, "{ \"name\": " + userId + " }\n")
+            // appendToFile(userFile, "{ \"name\": " + userId + " }\n")
+            appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\" }\n")
 
             console.log("{ \"name\": " + userId + " }\n")
 
         } else {
             // Appends source and target ids to the transaction json file
-            appendToFile(userFile, "{ \"name\": " + userId + " },\n")
+            // appendToFile(userFile, "{ \"name\": " + userId + " },\n")
+            appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\" },\n")
 
             console.log("{ \"name\": " + userId + " },\n")
         }
