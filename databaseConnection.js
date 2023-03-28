@@ -59,7 +59,9 @@ module.exports.getTransactions = async function(timestep=1, limit=20) {
          * Transaction query to run on the database
          * @type {string}
          */
-        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as source, T.name as target LIMIT ' + limit;
+        // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as source, T.name as target LIMIT ' + limit;
+        // Query for new database design 3-28-2023
+        const readQuery = 'MATCH (s {timestep: ' + timestep + '})-[]->(t {timestep: ' + timestep + '}) RETURN s.id as source, t.id as target LIMIT ' + limit
 
         /**
          * Result received from the database
@@ -111,7 +113,11 @@ module.exports.getUsers = async function(timestep=1, limit=20) {
          */
         // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as name LIMIT ' + limit + ' UNION MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN T.name as name LIMIT ' + limit;
         //const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as name, S.class as class LIMIT ' + limit + ' UNION MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN T.name as name, S.class as class LIMIT ' + limit;
-        const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as name, S.class as class LIMIT ' + limit + ' UNION MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN T.name as name, S.class as class LIMIT ' + limit;
+        // const readQuery = 'MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN S.name as name, S.class as class LIMIT ' + limit + ' UNION MATCH p = (S:source)-[* {\`time step\`:' + timestep + '}]-(T:target) RETURN T.name as name, S.class as class LIMIT ' + limit;
+
+        // Query for new database design 3-28-2023
+        const readQuery = 'MATCH (s {timestep: '+timestep+'})-[]->(t {timestep: '+timestep+'}) RETURN s.id as name, s.class as class, s.timestep as timestep LIMIT '+limit+
+                ' UNION MATCH (s {timestep: '+timestep+'})-[]->(t {timestep: '+timestep+'}) RETURN t.id as name, t.class as class, t.timestep as timestep LIMIT ' + limit
 
         // MATCH p = (S:source)-[* {`time step`:1}]-(T:target) RETURN S.name as name, S.class as class LIMIT 100 UNION MATCH p = (S:source)-[* {`time step`:1}]-(T:target) RETURN T.name as name, S.class as class LIMIT 100
 
@@ -196,7 +202,7 @@ function createUserFile(userFile, readResult) {
     writeToFile(userFile, "[\n")
 
 
-    const nodeList = [];
+    // const nodeList = [];
     console.log("[")
 
     for (const [index, record] of readResult.records.entries()) {
@@ -208,37 +214,39 @@ function createUserFile(userFile, readResult) {
          */
         let userId = record.get('name');
 
-        let userClass = record.get('class')
+        let userClass = record.get('class');
 
-        if (!nodeList.hasOwnProperty("" + userId)) {
-            nodeList["" + userId] = userClass;
-            if (index != 0) {
-                appendToFile(userFile, ",\n{ \"name\": " + userId + ", \"class\": \"" + userClass + "\" }");
-            }
-            else {
-                appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\" }")
-            }
+        let userTimestep = record.get('timestep');
 
-            console.log("{ \"name\": " + userId + " }\n")
-        }
+        // if (!nodeList.hasOwnProperty("" + userId)) {
+        //     nodeList["" + userId] = userClass;
+        //     if (index != 0) {
+        //         appendToFile(userFile, ",\n{ \"name\": " + userId + ", \"class\": \"" + userClass + "\" }");
+        //     }
+        //     else {
+        //         appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\" }")
+        //     }
+        //
+        //     console.log("{ \"name\": " + userId + " }\n")
+        // }
 
-        /*
+
         if (index === (readResult.records.length - 1)) {
             // Do not include a comma if the transaction is the last in the list
 
             // Appends source and target ids to the transaction json file
             // appendToFile(userFile, "{ \"name\": " + userId + " }\n")
-            appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\" }\n")
+            appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\", \"timestep\": " + userTimestep + " }\n")
 
             console.log("{ \"name\": " + userId + " }\n")
 
         } else {
             // Appends source and target ids to the transaction json file
             // appendToFile(userFile, "{ \"name\": " + userId + " },\n")
-            appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\" },\n")
+            appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\", \"timestep\": " + userTimestep + " },\n")
 
             console.log("{ \"name\": " + userId + " },\n")
-        }*/
+        }
     }
 
     // Timeout so closing bracket is written to end of json and not the middle
