@@ -150,7 +150,8 @@ module.exports.getUsers = async function(timestep=1, limit=20) {
  * @param {QueryResult<Dict>} readResult The results received from the database query
  */
 function createTransactionFile(transactionFile, readResult) {
-    writeToFile(transactionFile, "[\n")
+    var str = "[\n";
+    //writeToFile(transactionFile, "[\n")
 
     console.log("[")
 
@@ -173,21 +174,22 @@ function createTransactionFile(transactionFile, readResult) {
             // Do not include a comma if the transaction is the last in the list
 
             // Appends source and target ids to the transaction json file
-            appendToFile(transactionFile, "{ \"source\": " + sourceID + ", \"target\": " + targetID + " }\n")
-
+            //appendToFile(transactionFile, "{ \"source\": " + sourceID + ", \"target\": " + targetID + " }\n")
+            str += "{ \"source\": " + sourceID + ", \"target\": " + targetID + " }\n";
             console.log("{ \"source\": " + sourceID + ", \"target\": " + targetID + " }")
 
         } else {
             // Appends source and target ids to the transaction json file
-            appendToFile(transactionFile, "{ \"source\": " + sourceID + ", \"target\": " + targetID + " },\n")
-
+            //appendToFile(transactionFile, "{ \"source\": " + sourceID + ", \"target\": " + targetID + " },\n")
+            str += "{ \"source\": " + sourceID + ", \"target\": " + targetID + " },\n";
             console.log("{ \"source\": " + sourceID + ", \"target\": " + targetID + " },")
         }
     }
 
     // Timeout so closing bracket is written to end of json and not the middle
-    setTimeout(() => {  appendToFile(transactionFile, "]"); }, 0);
-
+    //(() => {  appendToFile(transactionFile, "]"); }, 0);
+    str += "]";
+    writeToFile(transactionFile, str);
     console.log("]")
 }
 
@@ -199,7 +201,8 @@ function createTransactionFile(transactionFile, readResult) {
  * @param {QueryResult<Dict>} readResult The results received from the database query
  */
 function createUserFile(userFile, readResult) {
-    writeToFile(userFile, "[\n")
+    var str = "[\n";
+    //writeToFile(userFile, "[\n")
 
 
     // const nodeList = [];
@@ -236,23 +239,26 @@ function createUserFile(userFile, readResult) {
 
             // Appends source and target ids to the transaction json file
             // appendToFile(userFile, "{ \"name\": " + userId + " }\n")
-            appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\", \"timestep\": " + userTimestep + " }\n")
 
+            //appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\", \"timestep\": " + userTimestep + " }\n")
+            str += "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\", \"timestep\": " + userTimestep + " }\n";
             console.log("{ \"name\": " + userId + " }\n")
 
         } else {
             // Appends source and target ids to the transaction json file
             // appendToFile(userFile, "{ \"name\": " + userId + " },\n")
-            appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\", \"timestep\": " + userTimestep + " },\n")
 
+            //appendToFile(userFile, "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\", \"timestep\": " + userTimestep + " },\n")
+            str += "{ \"name\": " + userId + ", \"class\": \"" + userClass + "\", \"timestep\": " + userTimestep + " },\n";
             console.log("{ \"name\": " + userId + " },\n")
         }
     }
 
     // Timeout so closing bracket is written to end of json and not the middle
-    setTimeout(() => {  appendToFile(userFile, "]"); }, 0);
-
+    //setTimeout(() => {  appendToFile(userFile, "]"); }, 0);
+    str += "]";
     console.log("]")
+    writeToFile(userFile, str);
 }
 
 
